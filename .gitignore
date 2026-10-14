@@ -1,0 +1,10 @@
+# MATLAB
+*.asv
+*.mat
+slprj/
+*.mex*
+
+# Re-generated sweep output when running from matlab/
+matlab/*.xlsx
+
+.DS_Store
