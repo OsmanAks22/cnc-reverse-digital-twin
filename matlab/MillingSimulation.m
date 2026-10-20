@@ -12,18 +12,21 @@ PitchAngle = 360 / N;    % Pitch angle in degrees
 tau = 613;               % Shear stress in MPa
 betan = 19.1 + 0.29 * RakeAngle; % Friction angle in degrees
 
-Kte = 24;  % Tangential cutting force coefficient
-Kre = 43;  % Radial cutting force coefficient
-Kae = 0;   % Axial cutting force coefficient
+Kte = 24;  % Tangential edge force coefficient (N/mm)
+Kre = 43;  % Radial edge force coefficient (N/mm)
+Kae = 0;   % Axial edge force coefficient (N/mm)
 
-% Preallocate result storage
-results = [];
+% Parameter grid (defined first so the result matrix can be preallocated)
+axial_depth_range = [2 5 6 10 11 15];  % Axial depth of cut (mm)
+radial_width_range = [1 4 7 10 12];    % Radial width of cut (mm)
+feed_range = [.02 .05 .08 .1 .12 .15]; % Feed per tooth (mm)
+milling_conditions = [0 1];            % 0 = up-milling, 1 = down-milling
 
-% Define parameter ranges for testing
-axial_depth_range = [2 5 6 10 11 15];  % Axial depth of cut (reduced for testing)
-radial_width_range = [1 4 7 10 12];  % Radial width of cut (reduced for testing)
-feed_range = [.02 .05 .08 .1 .12 .15];   % Feed per tooth (reduced for testing)
-milling_conditions = [0 1];       % 0 = up-milling, 1 = down-milling
+% Preallocate result storage: one row per parameter combination and angular step
+S_nphi = 360;
+results = zeros(numel(milling_conditions) * numel(axial_depth_range) * ...
+    numel(radial_width_range) * numel(feed_range) * S_nphi, 8);
+row = 0;
 
 % Loop over all combinations of parameters
 for condition = milling_conditions
@@ -93,7 +96,8 @@ for condition = milling_conditions
                             end
                         end
                     end
-                    results = [results; condition, doc, woc, f, i, Fx(i), Fy(i), Fz(i)];
+                    row = row + 1;
+                    results(row, :) = [condition, doc, woc, f, i, Fx(i), Fy(i), Fz(i)];
                 end
                 
 
@@ -110,4 +114,4 @@ output = [header; num2cell(results)];
 filename = 'MillingSimulationResults2.xlsx';
 writecell(output, filename);
 
-disp('Simulation completed. Results have been saved to MillingSimulationResults.xlsx');
+disp(['Simulation completed. Results have been saved to ', filename]);

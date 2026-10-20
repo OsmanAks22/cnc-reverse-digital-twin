@@ -87,7 +87,6 @@ for i = 1:S_nphi
                 dFx = -dFt * cosd(phiz) - dFr * sind(phiz);
                 dFy = dFt * sind(phiz) - dFr * cosd(phiz);
                 dFz = -dFa;
-                dFxy = ((dFx.^2 + dFy.^2).^0.5);
 
                 % Integration of global cutting forces
                 Ft(i) = Ft(i) + dFt;
@@ -96,7 +95,6 @@ for i = 1:S_nphi
                 Fx(i) = Fx(i) + dFx;
                 Fy(i) = Fy(i) + dFy;
                 Fz(i) = Fz(i) + dFz;                
-                Fxy(i) = Fxy(i) + dFxy;
             end
             
         end
@@ -107,7 +105,9 @@ end
 
 
 % Post-processing for results
-% Fxy=(Fx.^2+Fy.^2).^0.5;
+% Resultant force in the XY plane: the magnitude of the summed force vector.
+% (Summing the magnitudes of the element forces, as before, overstates it.)
+Fxy = (Fx.^2 + Fy.^2).^0.5;
 T = Ft .* (ToolRadius / 1000);
 Power = (Ft .* (Vc / 60)) ./ 1000;
 
